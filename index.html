@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valentine?</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #0b1020;
+        color: #eaf0ff;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        padding: 24px;
+      }
+      .card {
+        width: min(720px, 92vw);
+        height: 420px;
+        position: relative; /* anchor absolute children inside this card [web:17] */
+        padding: 28px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        overflow: hidden;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+      }
+      h1 {
+        margin: 0 0 18px;
+        font-size: 34px;
+        line-height: 1.1;
+      }
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-weight: 700;
+        cursor: pointer;
+        color: #0b1020;
+        background: #eaf0ff;
+      }
+      .yes { background: #62ff9a; }
+      .no {
+        position: absolute; /* movable with left/top [web:20] */
+        background: #ff6b6b;
+      }
+      .hint { opacity: 0.8; margin-top: 18px; }
+      .hidden { display: none; }
+    </style>
+  </head>
+
+  <body>
+    <div class="card" id="card">
+      <div id="question">
+        <h1>Will you be my valentine, Sneha?</h1>
+
+        <button class="btn yes" id="yesBtn">Yes</button>
+
+        <button class="btn no" id="noBtn" type="button">No</button>
+
+        <p class="hint">(Try to click “No”.)</p>
+      </div>
+
+      <div id="yay" class="hidden">
+        <h1>Yay! ❤️</h1>
+        <p>See you on Valentine’s, Sneha.</p>
+        <button class="btn" id="resetBtn">Reset</button>
+      </div>
+    </div>
+
+    <script>
+      const card = document.getElementById("card");
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const question = document.getElementById("question");
+      const yay = document.getElementById("yay");
+
+      function clamp(n, min, max) {
+        return Math.max(min, Math.min(max, n));
+      }
+
+      function moveNoButton() {
+        // Measure sizes using getBoundingClientRect (returns a DOMRect with width/height, etc.) [web:11]
+        const cardRect = card.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect(); // [web:11]
+
+        const padding = 12;
+        const maxX = cardRect.width - btnRect.width - padding;
+        const maxY = cardRect.height - btnRect.height - padding;
+
+        const x = clamp(
+          Math.floor(Math.random() * (maxX - padding + 1)) + padding,
+          padding,
+          maxX
+        );
+        const y = clamp(
+          Math.floor(Math.random() * (maxY - padding + 1)) + padding,
+          padding,
+          maxY
+        );
+
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+      }
+
+      // Dodge on hover/touch/focus
+      noBtn.addEventListener("pointerenter", moveNoButton); // pointer events cover mouse + touch + pen [web:16]
+      noBtn.addEventListener("focus", moveNoButton);
+      noBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        moveNoButton();
+      });
+
+      yesBtn.addEventListener("click", () => {
+        question.classList.add("hidden");
+        yay.classList.remove("hidden");
+      });
+
+      resetBtn.addEventListener("click", () => {
+        yay.classList.add("hidden");
+        question.classList.remove("hidden");
+        moveNoButton();
+      });
+
+      window.addEventListener("resize", moveNoButton);
+
+      // Initial placement after layout
+      moveNoButton();
+    </script>
+  </body>
+</html>
